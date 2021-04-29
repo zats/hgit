@@ -1,0 +1,31 @@
+{
+  "name": "hgit",
+  "version": "1.0.0",
+  "description": "git but like hg",
+  "main": "hgit.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "git",
+    "hg",
+    "CLI"
+  ],
+  "author": "Sash Zats",
+  "license": "ISC",
+  "dependencies": {
+    "@octokit/auth-basic": "^1.4.8",
+    "@octokit/rest": "^18.5.3",
+    "@types/nodegit": "^0.27.1",
+    "chalk": "^4.1.1",
+    "clear": "^0.1.0",
+    "clui": "^0.3.6",
+    "commander": "^7.2.0",
+    "configstore": "^6.0.0",
+    "figlet": "^1.5.0",
+    "nodegit": "^0.27.0",
+    "simple-git": "^2.38.0",
+    "touch": "^3.1.0",
+    "typescript": "^4.2.4"
+  }
+}
