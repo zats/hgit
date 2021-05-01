@@ -37,11 +37,3 @@ export function gitStatusToStatus(status: GitStatus.STATUS): Status {
   console.error(`Unknown status: ${status}`);
   return Status.Unknown;
 }
-
-export function statusSortFunction(status1: { status: Status, path: string }, status2: { status: Status, path: string }): number {
-  const statusOrder = status1.status - status2.status;
-  if (statusOrder == 0) {
-    return status1.path > status2.path ? 1 : -1;
-  }
-  return statusOrder;
-}

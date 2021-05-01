@@ -4,8 +4,8 @@ import { discoverRepository } from '../utilities/repository-discovery';
 
 async function main(args: OptionValues) {
   const repo = await discoverRepository();
-  const signature = Signature.default(repo);
-  console.log(signature);
+  const signature = await Signature.default(repo);
+  console.log(signature.toString());
   // repo.createCommitOnHead(filesList, signature, signature, args.message);
 }
 

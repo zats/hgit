@@ -16,6 +16,6 @@ export async function discoverRepository(directory: string = process.cwd()): Pro
   return Promise.reject('Not a git repository (or any of the parent directories)');
 }
 
-export function convertRelativePathToRelativePath(repository: Repository, filepath: string, directory: string = process.cwd()): string {
+export function convertRepoPathToRelativePath(repository: Repository, filepath: string, directory: string = process.cwd()): string {
   return path.relative(directory, path.join(path.resolve(repository.path(), '..'), filepath));
 }
