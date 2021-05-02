@@ -1,5 +1,6 @@
 import { execSync } from 'child_process';
 import { writeFileSync, rmSync } from 'fs';
+import { git } from './setup';
 
 export class TestRepo {
   constructor() {
@@ -15,13 +16,14 @@ export class TestRepo {
     throw new Error('Method not implemented.');
   }
   create() {
-    execSync(`git init`);
+    git('init');
   }
   stage(files: TestFile[]) {
     files.forEach(file => file.execute());
   }
   commit(message: string) {
-    execSync(`git add . && git commit -a -m "${message}"`);
+    git('add .');
+    git(`commit -a -m "${message}"`);
   }
 }
 

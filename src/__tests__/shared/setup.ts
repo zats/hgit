@@ -19,6 +19,10 @@ export function removeTemporaryRepository() {
   temporaryPath = undefined;
 }
 
+export function git(command: string): string {
+  return execSync(`git ${command}`).toString().trimEnd();
+}
+
 export function hgit(command: string): string {
-  return execSync(`${bin} ${command}`).toString();
+  return execSync(`${bin} ${command}`).toString().trimEnd();
 }

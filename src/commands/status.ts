@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 import { Repository } from 'nodegit';
-import { Status, gitStatusToStatus, statusToShortString } from '../model/Status';
+import { gitStatusToStatus, statusToShortString } from '../model/Status';
 import { RepoStatus } from '../model/RepoStatus';
 import { FileStatus } from '../model/FileStatus';
 import { discoverRepository, convertRepoPathToRelativePath } from '../utilities/repository-discovery';
@@ -20,11 +20,11 @@ export async function getRepoStatus(repo: Repository, cwd: string): Promise<Repo
 
 async function main(args: any[]) {
   const repo = await discoverRepository(process.cwd());
-  const result = await getRepoStatus(repo, process.cwd()).then(rs => rs.fileStatus.map(fs => statusToString(rs.repo, fs)).join('\n'));
+  const result = await getRepoStatus(repo, process.cwd()).then(rs => rs.fileStatus.map(statusToString).join('\n'));
   console.log(result);
 }
 
-function statusToString(repo: Repository, s: FileStatus): string {
+function statusToString(s: FileStatus): string {
   return `${statusToShortString(s.status)} ${s.relativePath}`;
 }
 

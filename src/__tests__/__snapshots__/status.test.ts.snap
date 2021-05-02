@@ -1,13 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`status is empty when just committed 1`] = `
-"
-"
-`;
+exports[`status is empty when just committed 1`] = `""`;
 
 exports[`status is not empty when has uncommitted changes 1`] = `
 "M a.txt
 R b.txt
-? d.txt
-"
+? d.txt"
 `;
