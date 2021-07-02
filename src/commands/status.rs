@@ -3,6 +3,11 @@ use std::{panic, str};
 use clap::Clap;
 use git2::{Error, Repository, SubmoduleIgnore};
 
+use crate::status::FileStatus::git_status_to_file_status;
+
+#[path = "../models/FileStatus.rs"]
+pub mod FileStatus;
+
 #[derive(Clap)]
 pub struct StatusArgs {
     #[clap(short = 'a')]
@@ -25,6 +30,8 @@ fn print_short(repo: &Repository, statuses: &git2::Statuses) {
         .iter()
         .filter(|e| e.status() != git2::Status::CURRENT)
     {
+        let file_status = git_status_to_file_status(&entry.status());
+
         let mut istatus = match entry.status() {
             s if s.contains(git2::Status::INDEX_NEW) => 'A',
             s if s.contains(git2::Status::INDEX_MODIFIED) => 'M',
@@ -128,22 +135,22 @@ fn print_short(repo: &Repository, statuses: &git2::Statuses) {
 }
 
 #[path = "../test_automation/repo_mocks.rs"]
-pub mod test_automation;
+pub mod repo_mocks;
+
+#[path = "../test_automation/test_infra.rs"]
+pub mod test_infra;
 
 #[cfg(test)]
 mod tests {
     use std::{env, panic, str};
     use std::borrow::Borrow;
     use std::path::{Path, PathBuf};
-    // // Note this useful idiom: importing names from outer (for mod tests) scope.
-    // use super::*;
     use std::process::Command;
 
     use git2::Repository;
 
-    use crate::status::test_automation::*;
-    use crate::status::test_automation::create_git_repo;
-    use crate::status::test_automation::create_temporary_folder;
+    use crate::status::repo_mocks::*;
+    use crate::status::test_infra::*;
 
     #[test]
     fn no_changes_status() {
@@ -166,7 +173,7 @@ mod tests {
             add_all(repo);
             commit("Initial commit", repo);
             change_file_content("a.txt", "New piece of content\n", repo);
-            assert_eq!(hgsit("status", path), " M a.txt\n");
+            assert_eq!(hgit("status", path), " M a.txt\n");
         })
     }
 }
