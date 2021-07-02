@@ -3,7 +3,7 @@ use std::{panic, str};
 use clap::Clap;
 use git2::{Error, Repository, SubmoduleIgnore};
 
-use crate::status::FileStatus::git_status_to_file_status;
+use crate::status::FileStatus::{file_status_to_string, git_status_to_file_status};
 
 #[path = "../models/FileStatus.rs"]
 pub mod FileStatus;
@@ -31,6 +31,20 @@ fn print_short(repo: &Repository, statuses: &git2::Statuses) {
         .filter(|e| e.status() != git2::Status::CURRENT)
     {
         let file_status = git_status_to_file_status(&entry.status());
+
+        let (mut a, mut b, mut c) = (None, None, None);
+        if let Some(diff) = entry.head_to_index() {
+            a = diff.old_file().path();
+            b = diff.new_file().path();
+        }
+        if let Some(diff) = entry.index_to_workdir() {
+            a = a.or_else(|| diff.old_file().path());
+            b = b.or_else(|| diff.old_file().path());
+            c = diff.new_file().path();
+        }
+
+        println!("{} {}", file_status_to_string(&file_status), a.unwrap().display());
+        continue;
 
         let mut istatus = match entry.status() {
             s if s.contains(git2::Status::INDEX_NEW) => 'A',
@@ -122,16 +136,6 @@ fn print_short(repo: &Repository, statuses: &git2::Statuses) {
             (i, w) => println!("{}{} {}{}", i, w, a.unwrap().display(), extra),
         }
     }
-
-    for entry in statuses
-        .iter()
-        .filter(|e| e.status() == git2::Status::WT_NEW)
-    {
-        println!(
-            "?? {}",
-            entry.index_to_workdir().unwrap().old_file().path().unwrap().display()
-        );
-    }
 }
 
 #[path = "../test_automation/repo_mocks.rs"]
@@ -152,13 +156,15 @@ mod tests {
     use crate::status::repo_mocks::*;
     use crate::status::test_infra::*;
 
+    const TEXT_FILE_CONTENT: &str = "A piece of content\n";
+    const TEXT_FILE_CONTENT2: &str = "New piece of content\n";
+
     #[test]
     fn no_changes_status() {
         run_test_with_repo(|repo, path| {
-            add_file("a.txt", "A piece of content\n", repo);
-            add_file("b.txt", "A piece of content\n", repo);
-            add_file("c.txt", "A piece of content\n", repo);
-            add_all(repo);
+            add_file("a.txt", TEXT_FILE_CONTENT, repo, true);
+            add_file("b.txt", TEXT_FILE_CONTENT, repo, true);
+            add_file("c.txt", TEXT_FILE_CONTENT, repo, true);
             commit("Initial commit", repo);
             assert_eq!(hgit("status", path), "");
         })
@@ -167,13 +173,19 @@ mod tests {
     #[test]
     fn test_status_with_changes() {
         run_test_with_repo(|repo, path| {
-            add_file("a.txt", "A piece of content\n", repo);
-            add_file("b.txt", "A piece of content\n", repo);
-            add_file("c.txt", "A piece of content\n", repo);
-            add_all(repo);
+            add_file("a.txt", TEXT_FILE_CONTENT, repo, true);
+            add_file("b.txt", TEXT_FILE_CONTENT, repo, true);
+            add_file("c.txt", TEXT_FILE_CONTENT, repo, true);
             commit("Initial commit", repo);
-            change_file_content("a.txt", "New piece of content\n", repo);
-            assert_eq!(hgit("status", path), " M a.txt\n");
+            // modified
+            change_file_content("a.txt", TEXT_FILE_CONTENT2, repo);
+            // tracked
+            add_file("d.txt", TEXT_FILE_CONTENT, repo, true);
+            // untracked
+            add_file("e.txt", TEXT_FILE_CONTENT, repo, false);
+            // removed
+            remove_file("b.txt", repo);
+            assert_eq!(hgit("status", path), "M a.txt\nR b.txt\nA d.txt\n? e.txt\n");
         })
     }
 }

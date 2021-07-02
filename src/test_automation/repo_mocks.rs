@@ -9,6 +9,11 @@ use git2::{Commit, ObjectType, Repository, Signature};
 use tempdir::TempDir;
 use uuid::Uuid;
 
+use path_utils::relative_path;
+
+#[path = "../shared/path_utils.rs"]
+pub mod path_utils;
+
 pub fn create_temporary_folder() -> PathBuf {
     let uuid = Uuid::new_v4();
     let tmp_dir = TempDir::new(uuid.to_string().as_str()).unwrap();
@@ -25,11 +30,18 @@ pub fn create_git_repo(path: &Path) -> Repository {
     return repo;
 }
 
-pub fn add_file(name: &str, content: &str, repo: &Repository) {
+pub fn add_file(name: &str, content: &str, repo: &Repository, add_to_index: bool) {
     let file_path = repo.path().parent().unwrap().join(name);
     let mut file = File::create(&file_path).expect("Unable to create file");
     file.write_all(content.as_bytes()).expect("Unable to write");
     println!("Created temporary file: {}", file_path.display());
+    if add_to_index {
+        let mut index = repo.index().expect("Can't fetch index");
+        let relative_path = relative_path(&file_path, &PathBuf::from(repo.path().parent().unwrap()));
+        println!("Adding file {} ({})", relative_path.display(), file_path.display());
+        index.add_path(relative_path.as_path());
+        index.write();
+    }
 }
 
 pub fn change_file_content(name: &str, new_content: &str, repo: &Repository) {
@@ -41,6 +53,11 @@ pub fn change_file_content(name: &str, new_content: &str, repo: &Repository) {
         .open(file_path)
         .expect("File doesn't exist");
     file.write_all(new_content.as_bytes()).expect("Unable to write");
+}
+
+pub fn remove_file(name: &str, repo: &Repository) {
+    let file_path = repo.path().parent().unwrap().join(name);
+    fs::remove_file(file_path.as_path());
 }
 
 pub fn add_all(repo: &Repository) {

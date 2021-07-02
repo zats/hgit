@@ -12,7 +12,7 @@ pub enum FileStatus {
 }
 
 
-pub fn status_to_string(file_status: &FileStatus) -> &str {
+pub fn file_status_to_string(file_status: &FileStatus) -> &str {
     match file_status {
         FileStatus::Unknown => "",
         FileStatus::Modified => "M",
