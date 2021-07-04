@@ -11,3 +11,5 @@ clap = "3.0.0-beta.1"
 git2 = "0.13"
 uuid = { version = "0.8.2", features = ["v4"] }
 tempdir = "0.3.7"
+colored = "2"
+insta = "1.7"

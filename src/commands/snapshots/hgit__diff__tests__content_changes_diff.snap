@@ -1,0 +1,27 @@
+---
+source: src/../src/commands/diff.rs
+expression: "hgit(\"diff\", path)"
+
+---
+diff --git a/b.txt b/b.txt
+index adee32f..c37e889 100644
+--- a/b.txt
++++ b/b.txt
+@@ -1 +1 @@
+- A piece of content
++ New piece of content
+diff --git a/a.txt b/a.txt
+index adee32f..c37e889 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+- A piece of content
++ New piece of content
+diff --git a/c.txt b/c.txt
+deleted file mode 100644
+index adee32f..0000000
+--- a/c.txt
++++ /dev/null
+@@ -1 +0,0 @@
+- A piece of content
+

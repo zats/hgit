@@ -1,4 +1,4 @@
-use std::{panic, str};
+use std::str;
 
 use clap::Clap;
 use git2::{Error, Repository, SubmoduleIgnore};
@@ -146,46 +146,38 @@ pub mod test_infra;
 
 #[cfg(test)]
 mod tests {
-    use std::{env, panic, str};
-    use std::borrow::Borrow;
-    use std::path::{Path, PathBuf};
-    use std::process::Command;
-
-    use git2::Repository;
-
     use crate::status::repo_mocks::*;
     use crate::status::test_infra::*;
 
-    const TEXT_FILE_CONTENT: &str = "A piece of content\n";
-    const TEXT_FILE_CONTENT2: &str = "New piece of content\n";
-
     #[test]
-    fn no_changes_status() {
+    fn status_no_changes() {
         run_test_with_repo(|repo, path| {
-            add_file("a.txt", TEXT_FILE_CONTENT, repo, true);
-            add_file("b.txt", TEXT_FILE_CONTENT, repo, true);
-            add_file("c.txt", TEXT_FILE_CONTENT, repo, true);
-            commit("Initial commit", repo);
-            assert_eq!(hgit("status", path), "");
+            add_file(repo, "a.txt", TEXT_FILE_CONTENT, true);
+            add_file(repo, "b.txt", TEXT_FILE_CONTENT, true);
+            add_file(repo, "c.txt", TEXT_FILE_CONTENT, true);
+            commit(repo, "Initial commit");
+            insta::assert_snapshot!(hgit("status", path));
         })
     }
 
     #[test]
-    fn test_status_with_changes() {
+    fn status_local_mixed_changes() {
         run_test_with_repo(|repo, path| {
-            add_file("a.txt", TEXT_FILE_CONTENT, repo, true);
-            add_file("b.txt", TEXT_FILE_CONTENT, repo, true);
-            add_file("c.txt", TEXT_FILE_CONTENT, repo, true);
-            commit("Initial commit", repo);
+            add_file(repo, "a.txt", TEXT_FILE_CONTENT, true);
+            add_file(repo, "b.txt", TEXT_FILE_CONTENT, true);
+            add_file(repo, "c.txt", TEXT_FILE_CONTENT, true);
+            commit(repo, "Initial commit");
             // modified
-            change_file_content("a.txt", TEXT_FILE_CONTENT2, repo);
+            change_file_content(repo, "a.txt", TEXT_FILE_CONTENT2, false);
+            // modified staged
+            change_file_content(repo, "b.txt", TEXT_FILE_CONTENT2, true);
             // tracked
-            add_file("d.txt", TEXT_FILE_CONTENT, repo, true);
+            add_file(repo, "d.txt", TEXT_FILE_CONTENT, true);
             // untracked
-            add_file("e.txt", TEXT_FILE_CONTENT, repo, false);
+            add_file(repo, "e.txt", TEXT_FILE_CONTENT, false);
             // removed
-            remove_file("b.txt", repo);
-            assert_eq!(hgit("status", path), "M a.txt\nR b.txt\nA d.txt\n? e.txt\n");
+            remove_file(repo, "b.txt");
+            insta::assert_snapshot!(hgit("status", path));
         })
     }
 }

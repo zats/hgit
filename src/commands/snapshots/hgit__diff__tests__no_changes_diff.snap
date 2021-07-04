@@ -1,0 +1,6 @@
+---
+source: src/../src/commands/diff.rs
+expression: "hgit(\"diff\", path)"
+
+---
+

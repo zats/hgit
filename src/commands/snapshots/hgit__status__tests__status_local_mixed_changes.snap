@@ -1,0 +1,10 @@
+---
+source: src/../src/commands/status.rs
+expression: "hgit(\"status\", path)"
+
+---
+M a.txt
+R b.txt
+A d.txt
+? e.txt
+

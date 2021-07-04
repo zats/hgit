@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 pub fn relative_path(full_path: &PathBuf, root_folder: &PathBuf) -> PathBuf {
     let result = match full_path.strip_prefix(root_folder.as_path()) {

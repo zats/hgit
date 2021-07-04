@@ -2,11 +2,15 @@ extern crate clap;
 
 use clap::Clap;
 
+use diff::diff;
+use diff::DiffArgs;
 use status::status;
 use status::StatusArgs;
 
 #[path = "../src/commands/status.rs"]
 pub mod status;
+#[path = "../src/commands/diff.rs"]
+pub mod diff;
 
 
 #[derive(Clap)]
@@ -32,6 +36,9 @@ enum SubCommand {
 
     #[clap(name = "status")]
     Status(StatusArgs),
+
+    #[clap(name = "diff")]
+    Diff(DiffArgs),
 }
 
 /// A subcommand for controlling testing
@@ -70,6 +77,9 @@ fn main() {
         }
         SubCommand::Status(s) => {
             status(s);
+        }
+        SubCommand::Diff(s) => {
+            diff(s);
         }
     }
 }
