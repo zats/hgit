@@ -1,11 +1,10 @@
 extern crate colored;
 
-use std::fmt::Debug;
 use std::str;
 
 use clap::Clap;
 use colored::*;
-use git2::{Diff, DiffDelta, DiffFormat, DiffHunk, DiffLine, DiffOptions, Error, Repository, SubmoduleIgnore};
+use git2::{Diff, DiffDelta, DiffFormat, DiffHunk, DiffLine, DiffOptions, Error, Repository};
 
 #[derive(Clap)]
 pub struct DiffArgs {
@@ -48,10 +47,7 @@ pub fn diff(args: DiffArgs) -> Result<(), Error> {
     Ok(())
 }
 
-fn print_diff(repo: &Repository, diff: &Diff, args: &DiffArgs) {
-    let stats = diff.stats().expect("Can't get diff status");
-    let mut format = git2::DiffStatsFormat::NONE;
-    let buf = stats.to_buf(format, 80).expect("Failed to get the stat buffer");
+fn print_diff(_repo: &Repository, diff: &Diff, args: &DiffArgs) {
     diff.print(DiffFormat::Patch, |d, h, l| print_diff_line(d, h, l, args));
 }
 
@@ -59,7 +55,7 @@ fn print_diff_line(
     _delta: DiffDelta,
     _hunk: Option<DiffHunk>,
     line: DiffLine,
-    args: &DiffArgs,
+    _args: &DiffArgs,
 ) -> bool {
     print!("{}{}",
            match line.origin() {

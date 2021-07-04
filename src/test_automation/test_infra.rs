@@ -20,8 +20,8 @@ pub fn hgit<'a, 'b>(command: &'a str, path: &'a Path) -> String {
 }
 
 pub fn run_test_with_repo<T>(test: T) -> ()
-where
-    T: FnOnce(&Repository, &Path) -> () + panic::UnwindSafe,
+    where
+        T: FnOnce(&Repository, &Path) -> () + panic::UnwindSafe,
 {
     let result = panic::catch_unwind(|| {
         let path = create_temporary_folder();
@@ -32,8 +32,5 @@ where
 }
 
 fn hgit_path() -> PathBuf {
-    PathBuf::from(file!())
-        .join("../../../target/debug/hgit")
-        .canonicalize()
-        .unwrap()
+    PathBuf::from("./target/release/hgit").canonicalize().unwrap()
 }
