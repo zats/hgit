@@ -6,6 +6,11 @@ use clap::Clap;
 use colored::*;
 use git2::{Diff, DiffDelta, DiffFormat, DiffHunk, DiffLine, DiffOptions, Error, Repository};
 
+use repo_utils::*;
+
+#[path = "../shared/repo_utils.rs"]
+pub mod repo_utils;
+
 #[derive(Clap)]
 pub struct DiffArgs {
     #[clap(short = 'c')]
@@ -13,11 +18,10 @@ pub struct DiffArgs {
 }
 
 pub fn diff(args: DiffArgs) -> Result<(), Error> {
-    let path = ".";
-    let repo = Repository::discover(&path)?;
-    if repo.is_bare() {
-        return Err(Error::from_str("cannot report status on bare repository"));
-    }
+    let repo = match current_repo() {
+        Ok(repo) => repo,
+        Err(err) => { return Err(err); }
+    };
     let mut opts = DiffOptions::new();
     opts.reverse(false)
         .ignore_whitespace_change(true)

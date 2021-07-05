@@ -1,7 +1,12 @@
 use clap::Clap;
 use git2::{Error, Repository};
 
+use repo_utils::*;
+
 use crate::status::FileStatus::*;
+
+#[path = "../shared/repo_utils.rs"]
+pub mod repo_utils;
 
 #[path = "../models/FileStatus.rs"]
 pub mod FileStatus;
@@ -13,8 +18,10 @@ pub struct StatusArgs {
 }
 
 pub fn status(_args: StatusArgs) -> Result<(), Error> {
-    let path = ".";
-    let repo = Repository::discover(&path)?;
+    let repo = match current_repo() {
+        Ok(repo) => repo,
+        Err(err) => { return Err(err); }
+    };
     if repo.is_bare() {
         return Err(Error::from_str("cannot report status on bare repository"));
     }
