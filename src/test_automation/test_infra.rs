@@ -6,7 +6,7 @@ use git2::Repository;
 
 use crate::status::repo_mocks::*;
 
-pub fn hgit<'a, 'b>(command: &'a str, path: &'a Path) -> String {
+pub fn hgit(command: &str, path: &Path) -> String {
     let script_path = hgit_path();
     println!("Script path: {}", script_path.display());
     println!("Working folder: {}", path.display());

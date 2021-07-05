@@ -1,0 +1,6 @@
+---
+source: src/../src/commands/status.rs
+expression: "hgit(\"status --all\", path)"
+
+---
+

@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::fs;
 use std::fs::{File, OpenOptions};
 use std::io::Write;
@@ -73,6 +74,11 @@ pub fn add_all(repo: &Repository) {
     let mut index = repo.index().unwrap();
     index.add_all(["*"].iter(), git2::IndexAddOption::DEFAULT, None);
     index.write();
+}
+
+pub fn ignore_file(repo: &Repository, name: &str) {
+    add_file(repo, ".gitignore", name, true);
+    commit(repo, "Add gitignore");
 }
 
 fn find_last_commit(repo: &Repository) -> Result<Commit, git2::Error> {
